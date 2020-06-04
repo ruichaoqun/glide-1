@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
 
-if (!hasProperty('DISABLE_ERROR_PRONE')) {
-    apply plugin: "net.ltgt.errorprone"
-}
+//if (!hasProperty('DISABLE_ERROR_PRONE')) {
+//    apply plugin: "net.ltgt.errorprone"
+//}
 
 tasks.withType(JavaCompile) {
     options.fork = true
@@ -17,9 +17,9 @@ dependencies {
     api "androidx.exifinterface:exifinterface:${ANDROID_X_VERSION}"
     compileOnly "androidx.appcompat:appcompat:${ANDROID_X_VERSION}"
 
-    if (project.plugins.hasPlugin('net.ltgt.errorprone')) {
-        errorprone "com.google.errorprone:error_prone_core:${ERROR_PRONE_VERSION}"
-    }
+//    if (project.plugins.hasPlugin('net.ltgt.errorprone')) {
+//        errorprone "com.google.errorprone:error_prone_core:${ERROR_PRONE_VERSION}"
+//    }
 
     testImplementation "androidx.appcompat:appcompat:${ANDROID_X_VERSION}"
     testImplementation project(':testutil')

@@ -33,6 +33,7 @@ import java.util.List;
 /**
  * Manages component registration to extend or replace Glide's default loading, decoding, and
  * encoding logic.
+ * 管理组件注册以扩展或替换Glide的默认加载、解码和编码逻辑
  */
 // Public API.
 @SuppressWarnings({"WeakerAccess", "unused"})

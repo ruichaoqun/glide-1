@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.samples.imgur.api.Image;
 import dagger.android.AndroidInjection;
 import java.util.Collections;
@@ -44,6 +46,7 @@ public final class MainActivity extends AppCompatActivity {
     recyclerView.setLayoutManager(layoutManager);
     adapter = new ImgurImageAdapter();
     recyclerView.setAdapter(adapter);
+
 
     fetchImagesObservable
         .subscribeOn(Schedulers.newThread())
