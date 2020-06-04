@@ -435,6 +435,14 @@ public class RequestManagerRetriever implements Handler.Callback {
     return current;
   }
 
+  /**
+   * 通过向FragmentManager添加fragment来实现图片加载周期与activity或fragment同生命周期
+   * @param context
+   * @param fm
+   * @param parentHint
+   * @param isParentVisible
+   * @return
+   */
   @NonNull
   private RequestManager supportFragmentGet(
       @NonNull Context context,

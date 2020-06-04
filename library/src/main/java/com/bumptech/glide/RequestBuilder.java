@@ -664,7 +664,9 @@ public class RequestBuilder<TranscodeType> extends BaseRequestOptions<RequestBui
    */
   @NonNull
   public ViewTarget<ImageView, TranscodeType> into(@NonNull ImageView view) {
+    //需在主线程调用
     Util.assertMainThread();
+    //判空
     Preconditions.checkNotNull(view);
 
     BaseRequestOptions<?> requestOptions = this;

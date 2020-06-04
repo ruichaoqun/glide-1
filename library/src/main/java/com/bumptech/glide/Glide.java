@@ -175,8 +175,9 @@ public class Glide implements ComponentCallbacks2 {
 
   /**
    * Get the singleton.
-   *
+   *  单例模式生成Glide实例
    * @return the singleton
+   *
    */
   @NonNull
   // Double checked locking is safe here.
@@ -260,10 +261,12 @@ public class Glide implements ComponentCallbacks2 {
       @Nullable GeneratedAppGlideModule annotationGeneratedModule) {
     Context applicationContext = context.getApplicationContext();
     List<com.bumptech.glide.module.GlideModule> manifestModules = Collections.emptyList();
+    //当未使用注解处理器或注解处理器生成的annotationGeneratedModule中允许使用清单模式
     if (annotationGeneratedModule == null || annotationGeneratedModule.isManifestParsingEnabled()) {
       manifestModules = new ManifestParser(applicationContext).parse();
     }
 
+    //使用注解处理器初始化优先级大于使用清单文件初始化，并且注解处理器可以使用Excludes注解屏蔽部分清单文件解析的GlideModule
     if (annotationGeneratedModule != null
         && !annotationGeneratedModule.getExcludedModuleClasses().isEmpty()) {
       Set<Class<?>> excludedModuleClasses = annotationGeneratedModule.getExcludedModuleClasses();
@@ -276,6 +279,7 @@ public class Glide implements ComponentCallbacks2 {
         if (Log.isLoggable(TAG, Log.DEBUG)) {
           Log.d(TAG, "AppGlideModule excludes manifest GlideModule: " + current);
         }
+        //屏蔽掉注解处理器中声明的屏蔽类
         iterator.remove();
       }
     }
@@ -292,14 +296,19 @@ public class Glide implements ComponentCallbacks2 {
             : null;
     builder.setRequestManagerFactory(factory);
     for (com.bumptech.glide.module.GlideModule module : manifestModules) {
+      //先调用清单文件声明的Module初始化
       module.applyOptions(applicationContext, builder);
     }
     if (annotationGeneratedModule != null) {
+      //再使用注解处理器生成的annotationGeneratedModule初始化，此时有可能覆盖掉清单文件初始化的部分参数
       annotationGeneratedModule.applyOptions(applicationContext, builder);
     }
+    //build模式实例化glide
     Glide glide = builder.build(applicationContext);
+    //为glide添加注册表
     for (com.bumptech.glide.module.GlideModule module : manifestModules) {
       try {
+        //先添加清单文件声明中的注册表
         module.registerComponents(applicationContext, glide, glide.registry);
       } catch (AbstractMethodError e) {
         throw new IllegalStateException(
@@ -311,9 +320,11 @@ public class Glide implements ComponentCallbacks2 {
             e);
       }
     }
+    //再添加注解处理器声明中的注册表
     if (annotationGeneratedModule != null) {
       annotationGeneratedModule.registerComponents(applicationContext, glide, glide.registry);
     }
+    //监听低内存，如果发生内存不足会清除Glide缓存
     applicationContext.registerComponentCallbacks(glide);
     Glide.glide = glide;
   }
