@@ -19,7 +19,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 
-/** A DataFetcher that retrieves an {@link java.io.InputStream} for a Url. */
+/**
+ * A DataFetcher that retrieves an {@link java.io.InputStream} for a Url.
+ * 网络请求
+ * */
 public class HttpUrlFetcher implements DataFetcher<InputStream> {
   private static final String TAG = "HttpUrlFetcher";
   private static final int MAXIMUM_REDIRECTS = 5;

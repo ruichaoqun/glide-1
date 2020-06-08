@@ -187,6 +187,7 @@ public class Engine
 
     EngineResource<?> memoryResource;
     synchronized (this) {
+      //1.从内存缓存中获取资源
       memoryResource = loadFromMemory(key, isMemoryCacheable, startTime);
 
       if (memoryResource == null) {
@@ -221,6 +222,32 @@ public class Engine
     return null;
   }
 
+  /**
+   * 异步等待磁盘缓存或者从网络获取
+   * @param glideContext
+   * @param model
+   * @param signature
+   * @param width
+   * @param height
+   * @param resourceClass
+   * @param transcodeClass
+   * @param priority
+   * @param diskCacheStrategy
+   * @param transformations
+   * @param isTransformationRequired
+   * @param isScaleOnlyOrNoTransform
+   * @param options
+   * @param isMemoryCacheable
+   * @param useUnlimitedSourceExecutorPool
+   * @param useAnimationPool
+   * @param onlyRetrieveFromCache
+   * @param cb
+   * @param callbackExecutor
+   * @param key
+   * @param startTime
+   * @param <R>
+   * @return
+   */
   private <R> LoadStatus waitForExistingOrStartNewJob(
       GlideContext glideContext,
       Object model,
@@ -244,8 +271,10 @@ public class Engine
       EngineKey key,
       long startTime) {
 
+    //是否已经有该任务
     EngineJob<?> current = jobs.get(key, onlyRetrieveFromCache);
     if (current != null) {
+      //将callback加入到已开启的任务中
       current.addCallback(cb, callbackExecutor);
       if (VERBOSE_IS_LOGGABLE) {
         logWithTimeAndKey("Added to existing load", startTime, key);
@@ -253,6 +282,7 @@ public class Engine
       return new LoadStatus(cb, current);
     }
 
+    //如果没有该任务，创建新的图片请求任务
     EngineJob<R> engineJob =
         engineJobFactory.build(
             key,
@@ -261,6 +291,7 @@ public class Engine
             useAnimationPool,
             onlyRetrieveFromCache);
 
+    //创建新的图片解码任务
     DecodeJob<R> decodeJob =
         decodeJobFactory.build(
             glideContext,
@@ -279,10 +310,12 @@ public class Engine
             onlyRetrieveFromCache,
             options,
             engineJob);
-
+    //放入任务集合中
     jobs.put(key, engineJob);
 
+    //加入回调以及回调所在线程
     engineJob.addCallback(cb, callbackExecutor);
+    //开启任务
     engineJob.start(decodeJob);
 
     if (VERBOSE_IS_LOGGABLE) {
@@ -291,6 +324,13 @@ public class Engine
     return new LoadStatus(cb, engineJob);
   }
 
+  /**
+   * 从内存中加载图片
+   * @param key
+   * @param isMemoryCacheable
+   * @param startTime
+   * @return
+   */
   @Nullable
   private EngineResource<?> loadFromMemory(
       EngineKey key, boolean isMemoryCacheable, long startTime) {
@@ -298,6 +338,7 @@ public class Engine
       return null;
     }
 
+    //1.从活动资源中加载(Active Resources) ，现在是否有另一个 View 正在展示这张图片？
     EngineResource<?> active = loadFromActiveResources(key);
     if (active != null) {
       if (VERBOSE_IS_LOGGABLE) {
@@ -306,6 +347,7 @@ public class Engine
       return active;
     }
 
+    //2.从内存缓存中加载 (Memory cache) - 该图片是否最近被加载过并仍存在于内存中？
     EngineResource<?> cached = loadFromCache(key);
     if (cached != null) {
       if (VERBOSE_IS_LOGGABLE) {
@@ -325,6 +367,7 @@ public class Engine
   private EngineResource<?> loadFromActiveResources(Key key) {
     EngineResource<?> active = activeResources.get(key);
     if (active != null) {
+      //使用次数计数器+1
       active.acquire();
     }
 
@@ -334,13 +377,16 @@ public class Engine
   private EngineResource<?> loadFromCache(Key key) {
     EngineResource<?> cached = getEngineResourceFromCache(key);
     if (cached != null) {
+      //使用次数计数器+1
       cached.acquire();
+      //将resource放入活动资源中
       activeResources.activate(key, cached);
     }
     return cached;
   }
 
   private EngineResource<?> getEngineResourceFromCache(Key key) {
+    //从缓存中取出resource,并从缓存中删除
     Resource<?> cached = cache.remove(key);
 
     final EngineResource<?> result;

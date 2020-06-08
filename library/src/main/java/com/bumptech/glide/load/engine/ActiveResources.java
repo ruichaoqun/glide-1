@@ -91,12 +91,14 @@ final class ActiveResources {
 
   @Nullable
   synchronized EngineResource<?> get(Key key) {
+    //从弱引用中查询
     ResourceWeakReference activeRef = activeEngineResources.get(key);
     if (activeRef == null) {
       return null;
     }
 
     EngineResource<?> active = activeRef.get();
+    //如果已经被回收
     if (active == null) {
       cleanupActiveReference(activeRef);
     }

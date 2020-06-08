@@ -616,7 +616,7 @@ public class RequestBuilder<TranscodeType> extends BaseRequestOptions<RequestBui
     if (!isModelSet) {
       throw new IllegalArgumentException("You must call #load() before calling #into()");
     }
-
+    //构造Request
     Request request = buildRequest(target, targetListener, options, callbackExecutor);
 
     Request previous = target.getRequest();

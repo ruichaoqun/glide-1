@@ -44,7 +44,7 @@ class SourceGenerator implements DataFetcherGenerator, DataFetcherGenerator.Fetc
     if (dataToCache != null) {
       Object data = dataToCache;
       dataToCache = null;
-      cacheData(data);
+      cacheData(data); //缓存原始数据
     }
 
     if (sourceCacheGenerator != null && sourceCacheGenerator.startNext()) {

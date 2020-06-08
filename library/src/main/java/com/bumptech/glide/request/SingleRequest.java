@@ -248,7 +248,7 @@ public final class SingleRequest<R> implements Request, SizeReadyCallback, Resou
       if (Util.isValidDimensions(overrideWidth, overrideHeight)) {
         onSizeReady(overrideWidth, overrideHeight);
       } else {
-        target.getSize(this);
+        target.getSize(this);//获取宽高
       }
 
       if ((status == Status.RUNNING || status == Status.WAITING_FOR_SIZE)

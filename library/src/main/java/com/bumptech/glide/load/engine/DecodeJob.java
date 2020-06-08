@@ -408,7 +408,7 @@ class DecodeJob<R>
       runGenerators();
     }
   }
-
+  //解码数据
   private void decodeFromRetrievedData() {
     if (Log.isLoggable(TAG, Log.VERBOSE)) {
       logWithTimeAndKey(
@@ -463,7 +463,7 @@ class DecodeJob<R>
     // throws.
     onEncodeComplete();
   }
-
+  //解码图片
   private <Data> Resource<R> decodeFromData(
       DataFetcher<?> fetcher, Data data, DataSource dataSource) throws GlideException {
     try {
